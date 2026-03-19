@@ -1,0 +1,19 @@
+{
+  "name": "ai-food-waste-manager",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AI Smart Food Waste Management System (React + Express + Flask ML)",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n server,ml,client -c blue,magenta,green \"npm --prefix server run dev\" \"npm --prefix ml-service run dev\" \"npm --prefix client start\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:ml": "npm --prefix ml-service run dev",
+    "dev:client": "npm --prefix client start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "dependencies": {
+    "mongodb": "^7.1.0"
+  }
+}
