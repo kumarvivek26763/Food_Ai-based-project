@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import FoodForm from "../components/FoodForm";
 import Dashboard from "../components/Dashboard";
 import { getFoodEntries } from "../services/api";
+import HomeDescription from "../components/HomeDescription";
+
 
 export default function Home() {
   const [entries, setEntries] = useState([]);
@@ -122,6 +124,75 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-7 grid gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5">
+          <div className="flex items-center gap-3">
+            <div className="animate-floaty h-11 w-11 rounded-2xl bg-emerald-600/15 flex items-center justify-center text-emerald-700 font-extrabold">
+              AI
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-slate-900">Predict demand</div>
+              <div className="text-xs text-slate-600">Random Forest uses students count</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-sky-600/15 flex items-center justify-center text-sky-700 font-extrabold">
+              %
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-slate-900">Track waste</div>
+              <div className="text-xs text-slate-600">Waste % + threshold alerts</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm backdrop-blur overflow-hidden transition-transform hover:-translate-y-0.5">
+          <div className="flex items-center gap-3">
+            <img
+              alt="NGO map illustration"
+              src="/assets/ngo-map.svg"
+              className="h-11 w-11 rounded-2xl animate-gradient-shift object-cover"
+            />
+            <div>
+              <div className="text-sm font-extrabold text-slate-900">Redistribute</div>
+              <div className="text-xs text-slate-600">Optional NGO pickup request</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-white/70 shadow-sm backdrop-blur overflow-hidden">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="p-6">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
+              Production-ready UX
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            </div>
+            <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
+              Smart alerts that help real people
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              When waste exceeds your configured threshold, the system can connect the alert entry with
+              nearby NGOs using your location (optional).
+            </p>
+          </div>
+          <div className="relative">
+            <div className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-emerald-200/30 blur-2xl" />
+            <div className="p-6">
+              <img
+                alt="Food waste illustration"
+                src="/assets/hero-food.svg"
+                className="w-full h-auto rounded-2xl border border-slate-200 bg-white animate-floaty"
+              />
+            </div>
+          </div>
+        </div>
+        <HomeDescription/>
       </div>
     </div>
   );

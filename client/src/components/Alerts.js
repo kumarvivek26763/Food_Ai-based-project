@@ -7,9 +7,23 @@ export default function Alerts({ entries }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <div className="text-sm font-extrabold text-slate-900">Alerts</div>
-          <div className="text-xs text-slate-600">Waste above the configured threshold</div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <div className="h-9 w-9 rounded-2xl bg-red-600/15 border border-red-200 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 9v4" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M12 17h.01" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                <path
+                  d="M10.3 4.2 2.7 18a2 2 0 0 0 1.8 3h15a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"
+                  stroke="#dc2626"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div className="text-sm font-extrabold text-slate-900 truncate">Alerts</div>
+          </div>
+          <div className="text-xs text-slate-600 mt-1">Waste above the configured threshold</div>
         </div>
         <div className="rounded-2xl bg-red-50 px-3 py-2 text-xs font-extrabold text-red-700">
           {alerts.length} active

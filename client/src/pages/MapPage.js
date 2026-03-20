@@ -189,9 +189,16 @@ export default function MapPage() {
               Use your location to find nearby NGOs and request pickup for excess food alerts.
             </div>
           </div>
-          <div className="rounded-2xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
-            {apiKey ? "Maps ready" : "Add API key"}
-          </div>
+            <div className="flex flex-col items-end gap-2">
+              <div className="rounded-2xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
+                {apiKey ? "Maps ready" : "Add API key"}
+              </div>
+              <img
+                alt="NGO map illustration"
+                src="/assets/ngo-map.svg"
+                className="h-14 w-14 animate-floaty rounded-2xl border border-slate-200 bg-white"
+              />
+            </div>
         </div>
 
         {!apiKey ? (
