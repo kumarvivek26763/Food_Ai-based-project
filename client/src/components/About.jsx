@@ -1,6 +1,23 @@
 import React from "react";
+import AboutDown from "./AboutDown";
+import FAQAccordion from "./FAQAccordion";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function About() {
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.replace("#", ""));
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location]);
+
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       
@@ -47,6 +64,12 @@ export default function About() {
           </div>
         </div>
 
+      </div>
+      <div className="shadow-[rgba(0,0,0,0.4)_0px_2px_4px,rgba(0,0,0,0.3)_0px_7px_13px_-3px,rgba(0,0,0,0.2)_0px_-3px_0px_inset] mt-10 rounded-md">
+        <AboutDown />
+      </div>
+      <div>
+        <FAQAccordion/>
       </div>
     </div>
   );
