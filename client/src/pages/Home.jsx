@@ -3,44 +3,52 @@ import FoodForm from "../components/FoodForm";
 import Dashboard from "../components/Dashboard";
 import { getFoodEntries } from "../services/api";
 import HomeDescription from "../components/HomeDescription";
+import ProgramCard from "../components/ProgramCard";
+import BlogSection from "../components/BlogSection";
+import HeroSlider from "../components/HeroSlider";
+import WastManagment from "../components/WastManagment";
+import Ngocard from "../components/Ngocard";
+
 
 
 export default function Home() {
-  const [entries, setEntries] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [entries, setEntries] = useState([]);
+  // const [loading, setLoading] = useState(true);
 
-  async function refresh() {
-    setLoading(true);
-    try {
-      const data = await getFoodEntries();
-      setEntries(data);
-    } finally {
-      setLoading(false);
-    }
-  }
+  // async function refresh() {
+  //   setLoading(true);
+  //   try {
+  //     const data = await getFoodEntries();
+  //     setEntries(data);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    refresh();
-  }, []);
+  // useEffect(() => {
+  //   refresh();
+  // }, []);
 
-  const latest = entries[0];
+  // const latest = entries[0];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <div className="mb-5">
+      {/* <div className="mb-5">
         <div className="inline-flex items-center gap-2 rounded-2xl border bg-white/70 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
           Real-time predictions + waste alerts
         </div>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
           Smart Food Waste Management
         </h1>
         <p className="mt-2 text-sm text-slate-600 md:text-base">
           Enter students, food prepared, and wasted. The system predicts demand using an AI model and flags excess waste for action.
         </p>
-      </div>
+      </div> */}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* Copy Blow */}
+
+      {/* <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-4">
           <FoodForm
             onCreated={(created) => {
@@ -164,10 +172,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white/70 shadow-sm backdrop-blur overflow-hidden">
-        <div className="grid gap-4 md:grid-cols-2">
+      <div className="-mt-6 rounded-2xl border border-slate-200 bg-white/70 shadow-sm backdrop-blur overflow-hidden">
+        {/* <div className="grid gap-4 md:grid-cols-2">
           <div className="p-6">
             <div className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
               Production-ready UX
@@ -191,9 +199,15 @@ export default function Home() {
               />
             </div>
           </div>
-        </div>
-        <HomeDescription/>
+        </div> */}
+        <HeroSlider />
+        <HomeDescription />
+        <ProgramCard />
+        <BlogSection />
+        
+
       </div>
+      <Ngocard />
     </div>
   );
 }
