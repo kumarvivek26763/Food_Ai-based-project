@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getFoodEntries, notifyEntryNGOs } from "../services/api";
+import { formatNumber } from "../utils/helpers";
 
 export default function MapPage() {
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
@@ -245,7 +246,7 @@ export default function MapPage() {
                     <div className="min-w-0">
                       <div className="text-xs font-bold text-slate-700">Waste alert</div>
                       <div className="mt-1 text-sm font-extrabold text-red-700">
-                        {alertEntry.wastePercent.toFixed(1)}% waste
+                        {formatNumber(alertEntry.wastePercent, 1)}% waste
                       </div>
                     </div>
                     <div className="rounded-2xl bg-red-50 px-3 py-1 text-xs font-bold text-red-700">High</div>

@@ -1,13 +1,30 @@
 const mongoose = require("mongoose");
+const { error: logError } = require("../utils/logger");
 
-async function connectDb(mongoUri) {
-  if (!mongoUri) {
-    throw new Error("Missing MONGODB_URI");
+const defaultOptions = {
+  serverSelectionTimeoutMS: Number(process.env.MONGODB_SERVER_SELECTION_TIMEOUT_MS) || 12_000,
+  maxPoolSize: 10
+};
+
+async function connectDb(mongoUri, options = {}) {
+  if (!mongoUri || !String(mongoUri).trim()) {
+    throw new Error(
+      "Missing MONGODB_URI. Copy .env.example to .env in the project root and set MONGODB_URI (local mongod or MongoDB Atlas)."
+    );
   }
+
   mongoose.set("strictQuery", true);
-  await mongoose.connect(mongoUri);
-  return mongoose.connection;
+
+  try {
+    await mongoose.connect(String(mongoUri).trim(), { ...defaultOptions, ...options });
+    mongoose.connection.on("error", (err) => logError("[mongodb]", err.message));
+    return mongoose.connection;
+  } catch (err) {
+    logError("[mongodb] connection failed:", err.message);
+    throw new Error(
+      `MongoDB connection failed: ${err.message}. Start MongoDB locally, check the URI, or use Atlas.`
+    );
+  }
 }
 
 module.exports = { connectDb };
-

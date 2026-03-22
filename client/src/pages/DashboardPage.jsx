@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Alerts from "../components/Alerts";
 import Charts from "../components/Charts";
-import { getFoodEntries } from "../services/api";
+import { getFoodEntries, getFoodStatsSummary } from "../services/api";
 
 export default function DashboardPage() {
   const [entries, setEntries] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,6 +14,14 @@ export default function DashboardPage() {
       try {
         const data = await getFoodEntries();
         setEntries(data);
+      } catch {
+        setEntries([]);
+      }
+      try {
+        const summary = await getFoodStatsSummary();
+        setStats(summary);
+      } catch {
+        setStats(null);
       } finally {
         setLoading(false);
       }
@@ -33,6 +42,21 @@ export default function DashboardPage() {
           <p className="mt-2 text-sm text-slate-600">
             Analytics, waste trends, and alerts {loading ? " (loading...)" : ""}
           </p>
+          {stats && !loading ? (
+            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-semibold text-emerald-800">
+                {stats.totalEntries} entries
+              </span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 font-semibold text-slate-700">
+                {stats.alertEntries} alerts
+              </span>
+              {stats.avgWastePercent != null ? (
+                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700">
+                  Avg waste {stats.avgWastePercent}%
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <div className="relative hidden md:block">

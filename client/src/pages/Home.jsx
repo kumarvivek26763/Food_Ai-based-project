@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import FoodForm from "../components/FoodForm";
-import Dashboard from "../components/Dashboard";
-import { getFoodEntries } from "../services/api";
+import React from "react";
 import HomeDescription from "../components/HomeDescription";
 import ProgramCard from "../components/ProgramCard";
 import BlogSection from "../components/BlogSection";
 import HeroSlider from "../components/HeroSlider";
-import WastManagment from "../components/WastManagment";
 import Ngocard from "../components/Ngocard";
 
 
@@ -211,20 +207,3 @@ export default function Home() {
     </div>
   );
 }
-
-function Pill({ text }) {
-  return (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-      {text}
-    </div>
-  );
-}
-
-function Badge({ kind, text }) {
-  const cls =
-    kind === "danger"
-      ? "bg-red-50 text-red-700 border-red-200"
-      : "bg-emerald-50 text-emerald-700 border-emerald-200";
-  return <div className={`rounded-xl border px-3 py-1 text-xs font-bold ${cls}`}>{text}</div>;
-}
-

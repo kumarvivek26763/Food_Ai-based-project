@@ -1,6 +1,11 @@
 const Food = require("../models/Food");
-const { predictFoodDemand } = require("../services/aiService");
+const { predictFoodDemand, MlServiceError } = require("../services/aiService");
 const { computeWastePercent, isAlert } = require("../services/alertService");
+const { sendNgoPickupEmail } = require("../services/notificationService");
+
+function allowPredictionFallback() {
+  return String(process.env.ALLOW_PREDICTION_FALLBACK || "").toLowerCase() === "true";
+}
 
 async function createFoodEntry(req, res) {
   try {
@@ -14,8 +19,27 @@ async function createFoodEntry(req, res) {
       return res.status(400).json({ message: "Invalid input" });
     }
 
-    const mlServiceUrl = process.env.ML_SERVICE_URL;
-    const predictedFood = await predictFoodDemand({ mlServiceUrl, students: studentsNum });
+    let predictedFood;
+    let predictionSource;
+    try {
+      const result = await predictFoodDemand({
+        mlServiceUrl: process.env.ML_SERVICE_URL,
+        students: studentsNum,
+        allowFallback: allowPredictionFallback()
+      });
+      predictedFood = result.prediction;
+      predictionSource = result.source;
+    } catch (err) {
+      if (err instanceof MlServiceError) {
+        return res.status(503).json({
+          message: err.message,
+          hint: err.hint,
+          code: err.code
+        });
+      }
+      throw err;
+    }
+
     const wastePercent = computeWastePercent({ foodPrepared: preparedNum, foodWasted: wastedNum });
     const alert = isAlert({
       wastePercent,
@@ -27,6 +51,7 @@ async function createFoodEntry(req, res) {
       foodPrepared: preparedNum,
       foodWasted: wastedNum,
       predictedFood,
+      predictionSource,
       wastePercent,
       alert
     });
@@ -41,6 +66,36 @@ async function getAllFoodEntries(req, res) {
   try {
     const docs = await Food.find().sort({ createdAt: -1 }).lean();
     return res.json(docs);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err?.message || err) });
+  }
+}
+
+async function getFoodStatsSummary(req, res) {
+  try {
+    const [total, alertCount, agg] = await Promise.all([
+      Food.countDocuments(),
+      Food.countDocuments({ alert: true }),
+      Food.aggregate([
+        {
+          $group: {
+            _id: null,
+            avgWastePercent: { $avg: "$wastePercent" },
+            avgPredicted: { $avg: "$predictedFood" },
+            avgStudents: { $avg: "$students" }
+          }
+        }
+      ])
+    ]);
+
+    const a = agg[0] || {};
+    return res.json({
+      totalEntries: total,
+      alertEntries: alertCount,
+      avgWastePercent: a.avgWastePercent != null ? Math.round(a.avgWastePercent * 100) / 100 : null,
+      avgPredictedFood: a.avgPredicted != null ? Math.round(a.avgPredicted * 100) / 100 : null,
+      avgStudents: a.avgStudents != null ? Math.round(a.avgStudents * 100) / 100 : null
+    });
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err?.message || err) });
   }
@@ -72,11 +127,21 @@ async function notifyNearbyNGOs(req, res) {
     entry.notificationAt = new Date();
 
     await entry.save();
+
+    await sendNgoPickupEmail({
+      entry: entry.toObject(),
+      ngos: sanitized
+    });
+
     return res.json(entry.toObject ? entry.toObject() : entry);
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err?.message || err) });
   }
 }
 
-module.exports = { createFoodEntry, getAllFoodEntries, notifyNearbyNGOs };
-
+module.exports = {
+  createFoodEntry,
+  getAllFoodEntries,
+  getFoodStatsSummary,
+  notifyNearbyNGOs
+};

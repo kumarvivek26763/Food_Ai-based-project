@@ -28,7 +28,9 @@ export default function FoodForm({ onCreated }) {
       });
       onCreated?.(created);
     } catch (err) {
-      setError(err?.response?.data?.message || err?.message || "Failed to submit");
+      const data = err?.response?.data;
+      const hint = data?.hint ? ` ${data.hint}` : "";
+      setError((data?.message || err?.message || "Failed to submit") + hint);
     } finally {
       setSubmitting(false);
     }

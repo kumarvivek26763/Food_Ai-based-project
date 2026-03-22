@@ -1,15 +1,7 @@
-import   { useEffect, useState } from "react";
-import FoodForm from "../components/FoodForm";
-import Dashboard from "../components/Dashboard";
+import { useEffect, useState } from "react";
+import FoodForm from "./FoodForm";
+import Dashboard from "./Dashboard";
 import { getFoodEntries } from "../services/api";
-import HomeDescription from "../components/HomeDescription";
-import ProgramCard from "../components/ProgramCard";
-import BlogSection from "../components/BlogSection";
-import HeroSlider from "../components/HeroSlider";
-// import WastManagment from "../components/WastManagment";
- 
-
-
 
 export default function WastManagment() {
     const [entries, setEntries] = useState([]);
@@ -171,8 +163,7 @@ export default function WastManagment() {
                 </div>
             </div>
         </div>
-    )
-
+    );
 }
 
 
