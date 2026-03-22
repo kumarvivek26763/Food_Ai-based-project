@@ -6,6 +6,12 @@ const FoodSchema = new mongoose.Schema(
     foodPrepared: { type: Number, required: true, min: 0 },
     foodWasted: { type: Number, required: true, min: 0 },
     predictedFood: { type: Number, required: true, min: 0 },
+    /** How predictedFood was produced: Flask Random Forest vs offline heuristic. */
+    predictionSource: {
+      type: String,
+      enum: ["ml", "fallback"],
+      default: "ml"
+    },
     wastePercent: { type: Number, required: true, min: 0 },
     alert: { type: Boolean, required: true, default: false },
 

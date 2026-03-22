@@ -72,6 +72,36 @@ export default function Navbar() {
           >
             Map (optional)
           </NavLink>
+          <NavLink
+            to="/waste"
+            className={({ isActive }) =>
+              `${base} ${
+                isActive ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200" : "text-slate-700"
+              }`
+            }
+          >
+            Waste tools
+          </NavLink>
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              `${base} ${
+                isActive ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200" : "text-slate-700"
+              }`
+            }
+          >
+            Login
+          </NavLink>
+          <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+              `${base} ${
+                isActive ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200" : "text-slate-700"
+              }`
+            }
+          >
+            Sign up
+          </NavLink>
         </nav>
       </div>
     </header>

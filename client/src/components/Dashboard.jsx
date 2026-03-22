@@ -32,6 +32,13 @@ export default function Dashboard({ latest }) {
           <Stat
             label="Predicted food demand"
             value={formatNumber(latest.predictedFood, 0)}
+            sub={
+              latest.predictionSource === "fallback"
+                ? "Baseline estimate (ML offline)"
+                : latest.predictionSource === "ml"
+                  ? "Random Forest (Flask)"
+                  : null
+            }
           />
           <Stat label="Food prepared" value={formatNumber(latest.foodPrepared)} />
           <Stat label="Food wasted" value={formatNumber(latest.foodWasted)} />
@@ -59,11 +66,12 @@ export default function Dashboard({ latest }) {
   );
 }
 
-function Stat({ label, value }) {
+function Stat({ label, value, sub }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
       <div className="text-xs font-semibold text-slate-700">{label}</div>
       <div className="mt-1 text-lg font-bold text-slate-900">{value}</div>
+      {sub ? <div className="mt-1 text-[11px] text-slate-500">{sub}</div> : null}
     </div>
   );
 }

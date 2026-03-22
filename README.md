@@ -41,6 +41,18 @@ Copy `.env.example` to `.env` in the repo root:
 copy .env.example .env
 ```
 
+Important keys:
+
+| Variable | Purpose |
+|----------|---------|
+| `MONGODB_URI` | **Required** — local `mongod` or MongoDB Atlas |
+| `ML_SERVICE_URL` | Flask service (default `http://127.0.0.1:5001`) |
+| `ALLOW_PREDICTION_FALLBACK` | Set `true` so saves still work if Flask is offline (uses baseline 1.1× students); use `false` when ML must always run |
+| `ALERT_WASTE_THRESHOLD` | Waste % at/above which `alert` is true (default 25) |
+| `SMTP_*`, `ALERT_EMAIL_TO` | Optional email when NGO pickup is requested |
+
+Google Maps: use `client/.env` and `REACT_APP_GOOGLE_MAPS_API_KEY` (see `client/.env.example`).
+
 ### 2a) Start MongoDB
 
 You must have MongoDB running at `mongodb://127.0.0.1:27017` (or update `MONGODB_URI` to MongoDB Atlas).
@@ -78,7 +90,9 @@ Services:
 ## Notes
 
 - The ML service trains a small baseline model on first run if `ml-service/model.pkl` is missing.
-- Optional features (maps, SMS/email) are stubbed as extension points.
+- Run `GET http://localhost:5000/health` to verify MongoDB and ML connectivity.
+- Optional NGO email uses `nodemailer` when `SMTP_*` is set in `.env`.
+- If you see **503** on “Save & Predict”, start Flask or set `ALLOW_PREDICTION_FALLBACK=true`.
 
 ## Optional: Google Maps NGO integration
 

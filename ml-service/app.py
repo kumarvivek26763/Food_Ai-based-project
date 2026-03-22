@@ -31,8 +31,21 @@ def health():
 def predict():
     payload = request.get_json(silent=True) or {}
     students = payload.get("students")
-    X = build_features(students)
-    pred = float(model.predict(X)[0])
+    if students is None:
+        return jsonify({"message": "Missing required field `students`"}), 400
+    try:
+        s = float(students)
+    except (TypeError, ValueError):
+        return jsonify({"message": "`students` must be a number"}), 400
+    if s < 0:
+        return jsonify({"message": "`students` must be non-negative"}), 400
+
+    try:
+        X = build_features(s)
+        pred = float(model.predict(X)[0])
+    except Exception as e:
+        return jsonify({"message": "Prediction failed", "detail": str(e)}), 500
+
     return jsonify({"prediction": pred})
 
 
