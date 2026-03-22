@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignUpPage() {
   const [role, setRole] = useState("Restaurant Owner");
@@ -11,6 +12,7 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
 
   const roles = [
     "Restaurant Owner 🍽️",
@@ -38,6 +40,9 @@ export default function SignUpPage() {
       // Save token and user info
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Refresh auth state
+      checkAuth();
 
       // Redirect to dashboard
       navigate("/dashboard");
