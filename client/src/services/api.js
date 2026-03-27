@@ -35,8 +35,12 @@ export async function getFoodEntries() {
   return resp.data;
 }
 
-export async function notifyEntryNGOs(entryId, ngos) {
-  const resp = await api.post(`/food/${entryId}/notify-ngos`, { ngos });
+export async function notifyEntryNGOs(entryId, ngos, userLocation = null) {
+  const payload = { ngos };
+  if (userLocation) {
+    payload.userLocation = userLocation;
+  }
+  const resp = await api.post(`/food/${entryId}/notify-ngos`, payload);
   return resp.data;
 }
 

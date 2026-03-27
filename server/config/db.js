@@ -8,6 +8,8 @@ const defaultOptions = {
 
 async function connectDb(mongoUri, options = {}) {
   if (!mongoUri || !String(mongoUri).trim()) {
+    console.error("[DEBUG] MONGODB_URI is missing or empty!");
+    console.error("[DEBUG] Current env MONGODB_URI:", process.env.MONGODB_URI);
     throw new Error(
       "Missing MONGODB_URI. Copy .env.example to .env in the project root and set MONGODB_URI (local mongod or MongoDB Atlas)."
     );

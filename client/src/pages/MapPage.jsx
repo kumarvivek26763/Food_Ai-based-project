@@ -16,6 +16,7 @@ export default function MapPage() {
   const [notifyError, setNotifyError] = useState("");
   const [notifyLoading, setNotifyLoading] = useState(false);
   const [selectedNgo, setSelectedNgo] = useState(null);
+  const [nearestNgo, setNearestNgo] = useState(null);
 
   const alertEntry = useMemo(() => {
     const alerts = (entries || []).filter((e) => e.alert && !e.notificationSent);
@@ -143,19 +144,47 @@ export default function MapPage() {
         });
       });
 
-      setNearbyNGOs(
-        found.slice(0, 12).map((p) => ({
+      // Calculate distances and find nearest NGO
+      const ngosWithDistance = found.slice(0, 12).map((p) => {
+        const ngoLat = p.geometry?.location?.lat();
+        const ngoLng = p.geometry?.location?.lng();
+        let distance = null;
+        if (ngoLat && ngoLng && geo) {
+          distance = calculateDistance(geo.lat, geo.lng, ngoLat, ngoLng);
+        }
+        return {
           placeId: p.place_id,
           name: p.name,
-          vicinity: p.vicinity
-        }))
-      );
+          vicinity: p.vicinity,
+          lat: ngoLat,
+          lng: ngoLng,
+          distance: distance
+        };
+      });
+
+      // Sort by distance and find nearest
+      ngosWithDistance.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+      setNearestNgo(ngosWithDistance[0] || null);
+      setNearbyNGOs(ngosWithDistance);
       setLoadingNGOs(false);
     })().catch(() => {
       setLoadingNGOs(false);
       setGeoError("Failed to search nearby NGOs. Check Places API permissions.");
     });
   }, [mapsLoaded, geo]);
+
+  // Calculate distance between two coordinates (Haversine formula)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
   async function onNotify() {
     setNotifyError("");
@@ -170,7 +199,14 @@ export default function MapPage() {
         return;
       }
 
-      await notifyEntryNGOs(alertEntry._id, nearbyNGOs);
+      // Include location data in NGO notification
+      const ngosWithLocation = nearbyNGOs.map(n => ({
+        ...n,
+        userLat: geo?.lat,
+        userLng: geo?.lng
+      }));
+
+      await notifyEntryNGOs(alertEntry._id, ngosWithLocation, { userLat: geo?.lat, userLng: geo?.lng });
       const data = await getFoodEntries();
       setEntries(data);
     } catch (err) {
@@ -190,16 +226,16 @@ export default function MapPage() {
               Use your location to find nearby NGOs and request pickup for excess food alerts.
             </div>
           </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="rounded-2xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
-                {apiKey ? "Maps ready" : "Add API key"}
-              </div>
-              <img
-                alt="NGO map illustration"
-                src="/assets/ngo-map.svg"
-                className="h-14 w-14 animate-floaty rounded-2xl border border-slate-200 bg-white"
-              />
+          <div className="flex flex-col items-end gap-2">
+            <div className="rounded-2xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
+              {apiKey ? "Maps ready" : "Add API key"}
             </div>
+            <img
+              alt="NGO map illustration"
+              src="/assets/ngo-map.svg"
+              className="h-14 w-14 animate-floaty rounded-2xl border border-slate-200 bg-white"
+            />
+          </div>
         </div>
 
         {!apiKey ? (
@@ -267,14 +303,45 @@ export default function MapPage() {
                 </div>
               ) : null}
 
+              {/* Nearest NGO Highlight */}
+              {nearestNgo && (
+                <div className="mt-4 rounded-2xl border-2 border-green-500 bg-green-50 p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-600">📍</span>
+                    <div className="text-xs font-extrabold text-green-800">NEAREST NGO</div>
+                  </div>
+                  <div className="mt-1 text-sm font-bold text-slate-900">{nearestNgo.name}</div>
+                  {nearestNgo.distance !== null && (
+                    <div className="mt-1 text-xs text-green-700">
+                      {(nearestNgo.distance * 1000).toFixed(0)} meters away
+                    </div>
+                  )}
+                  {nearestNgo.vicinity && (
+                    <div className="mt-1 text-xs text-slate-600">{nearestNgo.vicinity}</div>
+                  )}
+                </div>
+              )}
+
               <div className="mt-4">
                 <div className="text-xs font-extrabold text-slate-700">NGO list</div>
                 <div className="mt-2 max-h-[220px] overflow-auto rounded-xl border border-slate-200 bg-white">
                   {nearbyNGOs.length ? (
                     <ul className="divide-y divide-slate-100">
-                      {nearbyNGOs.map((n) => (
-                        <li key={n.placeId} className="px-3 py-2 text-sm">
-                          <div className="font-semibold text-slate-900">{n.name}</div>
+                      {nearbyNGOs.map((n, idx) => (
+                        <li
+                          key={n.placeId}
+                          className={`px-3 py-2 text-sm cursor-pointer hover:bg-slate-50 ${nearestNgo && n.placeId === nearestNgo.placeId ? 'bg-green-50' : ''}
+                          }`}
+                          onClick={() => setSelectedNgo(n)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="font-semibold text-slate-900">{n.name}</div>
+                            {n.distance !== null && (
+                              <div className="text-xs text-slate-500">
+                                {(n.distance * 1000).toFixed(0)}m
+                              </div>
+                            )}
+                          </div>
                           {n.vicinity ? <div className="mt-1 text-xs text-slate-600">{n.vicinity}</div> : null}
                         </li>
                       ))}
